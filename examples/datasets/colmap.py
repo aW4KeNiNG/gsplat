@@ -277,11 +277,16 @@ class Parser:
                 y_indices, x_indices = np.nonzero(mask)
                 y_min, y_max = y_indices.min(), y_indices.max() + 1
                 x_min, x_max = x_indices.min(), x_indices.max() + 1
-                mask = mask[y_min:y_max, x_min:x_max]
                 K_undist = K.copy()
-                K_undist[0, 2] -= x_min
-                K_undist[1, 2] -= y_min
-                roi_undist = [x_min, y_min, x_max - x_min, y_max - y_min]
+
+                if x_min == 0 and x_max == width and y_min == 0 and y_max == height:
+                    mask = None
+                    roi_undist = [0, 0, width, height]
+                else:
+                    mask = mask[y_min:y_max, x_min:x_max]
+                    K_undist[0, 2] -= x_min
+                    K_undist[1, 2] -= y_min
+                    roi_undist = [x_min, y_min, x_max - x_min, y_max - y_min]
             else:
                 assert_never(camtype)
 
